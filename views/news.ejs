@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Dashboard</title>
+</head>
+
+    <body class="text-gray-800 font-inter">
+
+    <%- include('partials/sidebar') %>
+
+    <!-- start: Main -->
+    <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all main">
+        <div class="py-2 px-6 bg-white flex items-center shadow-md shadow-black/5 sticky top-0 left-0 z-30">
+            <button type="button" class="text-lg text-gray-600 sidebar-toggle">
+                <i class="ri-menu-line"></i>
+            </button>
+            <ul class="flex items-center text-sm ml-4">
+                <li class="mr-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-600 font-medium">Dashboard</a>
+                </li>
+                <li class="text-gray-600 mr-2 font-medium">/</li>
+                <li class="text-gray-600 mr-2 font-medium">News</li>
+            </ul>
+            <ul class="ml-auto flex items-center">
+                <li class="dropdown ml-3">
+                    <button type="button" class="dropdown-toggle flex items-center">
+                        <img src="img/pp.jpg" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+                    </button>
+                    <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
+                        <form action="/logout" method="post">
+                            <button type="submit" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Log Out</button>
+                        </form>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- end: main -->
+
+
+        <!-- start: news -->
+
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <div class="flex-col">
+                    <p class="font-medium text-gray-400 mb-2">Latest news about DAI</p>
+                    <% dainews.forEach(daiContent => { %>
+                    <a href="<%= daiContent.url %>" target="_blank" class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5 mb-6 cursor-pointer block">
+                        <div class=" relative">
+                            <img class="rounded-md" src="<%= daiContent.img %>" alt="dai">
+                        </div>
+    
+                        <p class="font-semibold text-gray-600 mt-2"><%= daiContent.title %></p>
+    
+                    </a>
+                    <% }) %>
+                </div>
+                <div class="flex-col gap-6">
+                    <p class="font-medium text-gray-400 mb-2">Latest news about USDC</p>
+                    <% usdcnews.forEach(usdcContent => { %>
+                    <a href="<%= usdcContent.url %>" target="_blank" class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5 mb-6 cursor-pointer block">
+                        <div class=" relative">
+                            <img class="rounded-md" src="<%= usdcContent.img %>" alt="dai">
+                        </div>
+    
+                        <p class="font-semibold text-gray-600 mt-2"><%= usdcContent.title %></p>
+    
+                    </a>
+                    <% }) %>
+                </div>
+                <div class="flex-col gap-6">
+                    <p class="font-medium text-gray-400 mb-2">Latest news about USDT</p>
+                    <% usdtnews.forEach(usdtContent => { %> 
+                    <a href="<%= usdtContent.url %>" target="_blank" class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5 mb-6 cursor-pointer block">
+                        <div class=" relative">
+                            <img class="rounded-md" src="<%= usdtContent.img %>" alt="dai">
+                        </div>
+    
+                        <p class="font-semibold text-gray-600 mt-2"><%= usdtContent.title %></p>
+    
+                    </a>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <!-- end: news -->
+
+    </main>
+    <!-- end: Main -->
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./js/script.js"></script>
+
+    <script>
+        // start: Sidebar
+        const sidebarToggle = document.querySelector('.sidebar-toggle')
+        const sidebarOverlay = document.querySelector('.sidebar-overlay')
+        const sidebarMenu = document.querySelector('.sidebar-menu')
+        const main = document.querySelector('.main')
+        sidebarToggle.addEventListener('click', function (e) {
+            e.preventDefault()
+            main.classList.toggle('active')
+            sidebarOverlay.classList.toggle('hidden')
+            sidebarMenu.classList.toggle('-translate-x-full')
+        })
+        sidebarOverlay.addEventListener('click', function (e) {
+            e.preventDefault()
+            main.classList.add('active')
+            sidebarOverlay.classList.add('hidden')
+            sidebarMenu.classList.add('-translate-x-full')
+        })
+        document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault()
+                const parent = item.closest('.group')
+                if (parent.classList.contains('selected')) {
+                    parent.classList.remove('selected')
+                } else {
+                    document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function (i) {
+                        i.closest('.group').classList.remove('selected')
+                    })
+                    parent.classList.add('selected')
+                }
+            })
+        })
+        // end: Sidebar
+    </script>
+
+    </body>
+
+</html>

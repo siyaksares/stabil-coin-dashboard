@@ -1,0 +1,159 @@
+<script>
+    // comparsion
+    let blockCount = 0;
+
+    // Mevcut bloklardaki seçilen coin'leri saklamak için dizi
+    let selectedCoins = JSON.parse(localStorage.getItem('selectedCoins')) || [];
+
+    window.onload = function () {
+        // Sayfa yüklendiğinde localStorage'ı temizle
+        localStorage.removeItem('selectedCoins');
+        selectedCoins = [];
+        updateDisabledOptions();
+    };
+
+    // Başlangıçta 2 blok ekleyelim
+    for (let i = 0; i < 3; i++) {
+        addBlock();
+    }
+
+    document.getElementById('add-block').addEventListener('click', () => {
+        if (blockCount < 6) {
+            addBlock();
+        } else {
+            alert('En fazla 6 blok ekleyebilirsiniz.');
+        }
+    });
+
+    // Blok eklemek için fonksiyon
+    function addBlock() {
+        let block = document.getElementById('block-template').content.cloneNode(true);
+        document.getElementById('container').appendChild(block);
+        let button = document.querySelector('.block:last-child .add-button');
+        let selector = button.nextElementSibling;
+
+        button.addEventListener('click', () => {
+            button.style.display = 'none';
+            selector.style.display = 'block';
+        });
+
+        selector.addEventListener('change', () => {
+            const selectedValue = selector.value;
+            const previousValue = selector.dataset.previousValue;
+
+            // Eğer bir önceki değer varsa ve seçilen coinler arasındaysa, onu kaldır
+            if (previousValue && selectedCoins.includes(previousValue)) {
+                selectedCoins = selectedCoins.filter(coin => coin !== previousValue);
+            }
+
+            // Kontrol et: daha önce seçilen coin'leri kontrol et
+            if (selectedValue && selectedCoins.includes(selectedValue)) {
+                // Eğer seçilen coin daha önce seçilmişse, seçimi temizle
+                selector.value = '';
+                return;
+            }
+
+            // Eğer seçilen coin daha önce seçilmediyse, diziyi güncelle ve çerezleri kaydet
+            if (selectedValue) {
+                selectedCoins.push(selectedValue);
+                localStorage.setItem('selectedCoins', JSON.stringify(selectedCoins));
+            }
+
+            // Disable edilen seçenekleri güncelle
+            updateDisabledOptions();
+
+            // Seçilen değeri bir önceki değer olarak sakla
+            selector.dataset.previousValue = selectedValue;
+            fetch(`/api/${selectedValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    let coinData = data.coinData[0];
+                    let html = `
+            <img class="rounded-full" src="${coinData.img}" alt="${selectedValue}" width="64" height="64">
+            <table class="w-full mt-2">
+                <tbody class="flex flex-col">
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400 bg-gray-100">
+                        <th class="text-sm font-semibold text-gray-600 mb-5 mr-2">Security</th>
+                        <td id="security">${coinData.security}</td>
+                    </tr>
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400">
+                        <th class="text-sm font-semibold text-gray-600 mb-5 mr-2">Liq Change</th>
+                        <td>${coinData.liq_change}</td>
+                    </tr>
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400 bg-gray-100">
+                        <th class="text-sm font-semibold text-gray-600 mb-5 mr-2">Multichain</th>
+                        <td>${coinData.multichain}</td>
+                    </tr>
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400">
+                        <th class="text-sm font-semibold text-gray-600 mb-5 mr-2">APY</th>
+                        <td>${coinData.apy}</td>
+                    </tr>
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400 bg-gray-100">
+                        <th class="text-sm font-semibold text-gray-600 mb-5">Vol Change</th>
+                        <td>${coinData.vol_change}</td>
+                    </tr>
+                    <tr class="py-2 border-b border-b-gray-50 text-[13px] font-medium text-gray-400">
+                        <th class="text-sm font-semibold text-gray-600 mb-5">Dominance</th>
+                        <td>${coinData.dominance}%</td>
+                    </tr>
+                </tbody>                    
+            </table>
+            `;
+                    selector.nextElementSibling.innerHTML = html;
+
+                });
+        });
+
+        // Disable edilen seçenekleri güncelle
+        updateDisabledOptions();
+
+        blockCount++;
+    }
+
+    // Disable edilen seçenekleri güncelleme fonksiyonu
+    function updateDisabledOptions() {
+        document.querySelectorAll('.coin-selector option').forEach((option) => {
+            option.disabled = selectedCoins.includes(option.value);
+        });
+    }
+    ////// karşılaştırma
+</script>
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="./js/script.js"></script>
+
+<script>
+    // start: Sidebar
+    const sidebarToggle = document.querySelector('.sidebar-toggle')
+    const sidebarOverlay = document.querySelector('.sidebar-overlay')
+    const sidebarMenu = document.querySelector('.sidebar-menu')
+    const main = document.querySelector('.main')
+    sidebarToggle.addEventListener('click', function (e) {
+        e.preventDefault()
+        main.classList.toggle('active')
+        sidebarOverlay.classList.toggle('hidden')
+        sidebarMenu.classList.toggle('-translate-x-full')
+    })
+    sidebarOverlay.addEventListener('click', function (e) {
+        e.preventDefault()
+        main.classList.add('active')
+        sidebarOverlay.classList.add('hidden')
+        sidebarMenu.classList.add('-translate-x-full')
+    })
+    document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+            e.preventDefault()
+            const parent = item.closest('.group')
+            if (parent.classList.contains('selected')) {
+                parent.classList.remove('selected')
+            } else {
+                document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function (i) {
+                    i.closest('.group').classList.remove('selected')
+                })
+                parent.classList.add('selected')
+            }
+        })
+    })
+    // end: Sidebar
+</script>

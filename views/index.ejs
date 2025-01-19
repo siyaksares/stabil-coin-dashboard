@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Dashboard</title>
+</head>
+
+    <body class="text-gray-800 font-inter">
+
+        <%- include('partials/sidebar') %>
+
+        <!-- start: Main -->
+        <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all main">
+            <div class="py-2 px-6 bg-white flex items-center shadow-md shadow-black/5 sticky top-0 left-0 z-30">
+                <button type="button" class="text-lg text-gray-600 sidebar-toggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="flex items-center text-sm ml-4">
+                    <li class="mr-2">
+                        <a href="#" class="text-gray-400 hover:text-gray-600 font-medium">Dashboard</a>
+                    </li>
+                    <li class="text-gray-600 mr-2 font-medium">/</li>
+                    <li class="text-gray-600 mr-2 font-medium">Analytics</li>
+                </ul>
+                <ul class="ml-auto flex items-center">
+                    <li class="dropdown ml-3">
+                        <button type="button" class="dropdown-toggle flex items-center">
+                            <img src="img/pp.jpg" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+                        </button>
+                        <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
+                            <form action="/logout" method="post">
+                                <button type="submit" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Log Out</button>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- start: coin list -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <% coinData.forEach(coin => { %>
+                    <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5" data-coinSymbol="<%= coin.symbol %>">
+                        <div class="flex justify-between mb-6">
+                            <div>
+                                <div class="text-2xl font-semibold flex items-center w-6 mb-5">
+
+                                        <% if (coin.symbol.includes('DAI')) { %>
+                                            <img class="mr-2" src="https://s2.coinmarketcap.com/static/img/coins/64x64/4943.png" alt="coins">
+                                        <% } else if (coin.symbol.includes('USDC')) { %>
+                                            <img class="mr-2" src="https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png" alt="coins">
+                                            <% } else if (coin.symbol.includes('USDT')) { %>
+                                            <img class="mr-2" src="https://s2.coinmarketcap.com/static/img/coins/64x64/825.png" alt="coins">
+                                            <% } else if (coin.symbol.includes('BUSD')) { %>
+                                            <img class="mr-2" src="https://s3.coinmarketcap.com/static/img/portraits/62da512ff192d82df80012bb.png" alt="coins">
+                                            <% } else if (coin.symbol.includes('FUSD')) { %>
+                                            <img class="mr-2" src="https://s2.coinmarketcap.com/static/img/coins/64x64/26081.png" alt="coins">
+                                            <% } else if (coin.symbol.includes('TUSD')) { %>
+                                            <img class="mr-2" src="https://s2.coinmarketcap.com/static/img/coins/64x64/2563.png" alt="coins">
+                                            <% } %> 
+                                            
+                                    <%= coin.symbol %>
+
+                                    <% if (coin.percent_change_24h.includes('-')) { %>
+                                        <p class="text-red-600 ml-3 text-base"> <%= coin.percent_change_24h %> </p>
+                                    <% } else if (coin.percent_change_24h.includes('+')) { %>
+                                        <p class="text-green-600 ml-3 text-base"> <%= coin.percent_change_24h %> </p>
+                                    <% } else { %>
+                                        <p class=" text-base"> <%= coin.percent_change_24h %> </p>
+                                    <% } %>
+                                </div>
+                                <div class="flex">
+                                    <div class="flex flex-col">
+                                        <div class="text-sm font-semibold text-gray-600 mb-5">Price</div>
+                                        <div class="text-sm font-semibold text-gray-600">Market cap</div>
+                                        <div class="text-sm font-semibold text-gray-600 flex">24h Volume</div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <p class="ml-3 text-sm font-medium text-gray-400 mb-5">$<%= coin.price %></p>
+                                        <p class="ml-3 text-sm font-medium text-gray-400"><%= coin.market_cap %></p>
+                                        <div class="ml-3 flex text-sm font-medium text-gray-400">
+                                            <p>
+                                                <% if (coin.volume_change_24h.includes('-')) { %>
+                                                    <p class="text-red-600 mr-3"> <%= coin.volume_change_24h %> </p>
+                                                <% } else if (coin.volume_change_24h.includes('+')) { %>
+                                                    <p class="text-green-600 mr-3"> <%= coin.volume_change_24h %> </p>
+                                                <% } else { %>
+                                                    <p> <%= coin.volume_change_24h %> </p>
+                                                <% } %>
+                                            </p><%= coin.volume_24h %>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <!-- contract view -->
+                            <div class="dropdown">
+                                <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600"><i class="ri-more-fill"></i></button>
+                                <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[220px]">
+                                    <% if (coin.symbol.includes('DAI') ) { %>
+                                        <% daiContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                    <% if (coin.symbol.includes('USDC') ) { %>
+                                        <% usdcContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                    <% if (coin.symbol.includes('USDT') ) { %>
+                                        <% usdtContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                    <% if (coin.symbol.includes('FDUSD') ) { %>
+                                        <% fdusdContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                    <% if (coin.symbol.includes('BUSD') ) { %>
+                                        <% busdContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                    <% if (coin.symbol.includes('TUSD') ) { %>
+                                        <% tusdContracts.forEach(contract => { %>
+                                            <li>
+                                                <a href="<%= contract.url %>" target="_blank" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                                    <img class="w-4 mr-2" src="<%= contract.image %>" alt="coin logo">
+                                                    <%= contract.type %>
+                                                </a>
+                                            </li>
+                                        <% }); %>
+                                    <% } %>
+                                
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+                <!-- end: coin list -->
+
+                <!-- start: comparsion table -->
+                <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">
+                    <div class="flex justify-between mb-4 items-start">
+                        <div class="font-medium">Coin Comparison</div>
+                    </div>
+                    <div id="container" class="flex flex-wrap justify-between">
+                        <!-- Bloklar burada oluşturulacak -->
+                    </div>
+                    <button id="add-block" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Slot</button>
+                    <template id="block-template">
+                        <div class="block w-full sm:w-1/2 lg:w-1/3">
+                            <button class="add-button text-[12px] w-full py-2 px-4 bg-emerald-500">+</button>
+
+                            <select class="coin-selector text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md w-full" style="display: none;">
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">select</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">DAI</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">USDT</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">USDC</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">TUSD</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">FDUSD</option>
+                                <option class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">BUSD</option>
+                            </select>
+
+                            <div class="coin-data mt-2"></div>
+                        </div>
+                    </template>
+                </div>
+                <!-- end: comparsion table -->
+
+            </div>
+        </main>
+        <!-- end: Main -->
+  
+        <!-- scripts -->
+        <%- include('partials/scripts') %>
+
+    </body>
+
+</html>
